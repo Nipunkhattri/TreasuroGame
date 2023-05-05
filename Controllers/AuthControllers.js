@@ -12,9 +12,13 @@ export const signup = async (req,res)=>{
     let points = 0;
     try {
         const user = await UserModel.findOne({Username});
+        const Zealid = await UserModel.findOne({ZealId});
         // console.log(user)
         if(user){
-            return res.status(400).json({message:"User Already exists"});
+            return res.status(400).json({message:"Username already taken"});
+        }
+        if(Zealid){
+            return res.status(400).json({message:"Wrong Zeal Id"});
         }
         const hashedPassword = await bcrypt.hash(Password, 12);
         console.log(hashedPassword);
@@ -45,9 +49,10 @@ export const signin = async (req,res)=>{
     const {Username,Password} = req.body;
 
     const user = await UserModel.findOne({Username});
+    console.log(user);
 
-    if(!user){
-        return res.status(400).json({message:"Username already taken.."})
+    if(user == null){
+        return res.status(400).json({message:"Username not found.."})
     }
 
     const matchParrsword = await bcrypt.compare(Password,user.Password);
